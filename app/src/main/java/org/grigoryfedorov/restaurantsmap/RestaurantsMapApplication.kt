@@ -6,11 +6,14 @@ import org.grigoryfedorov.restaurantsmap.di.MainModuleProvider
 
 class RestaurantsMapApplication : Application(), MainModuleProvider {
 
-    override lateinit var mainModule: MainModule
+    override val mainModule: MainModule
+        get() = _mainModule
+
+    private lateinit var _mainModule: MainModule
 
     override fun onCreate() {
         super.onCreate()
-        mainModule = MainModule(context = this)
+        _mainModule = MainModule(this)
     }
 
 }

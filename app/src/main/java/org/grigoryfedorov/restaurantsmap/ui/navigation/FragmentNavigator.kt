@@ -1,4 +1,4 @@
-package org.grigoryfedorov.restaurantsmap.ui
+package org.grigoryfedorov.restaurantsmap.ui.navigation
 
 import android.os.Bundle
 import androidx.annotation.IdRes

@@ -1,7 +1,8 @@
-package org.grigoryfedorov.restaurantsmap.ui
+package org.grigoryfedorov.restaurantsmap.ui.navigation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import org.grigoryfedorov.restaurantsmap.ui.SingleLiveEvent
 
 class NavigationViewModel : ViewModel() {
 
