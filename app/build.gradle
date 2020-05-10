@@ -14,29 +14,32 @@ android {
         versionName "1.0"
     }
 
+    def getLocalPropertiesParam = { propertyName ->
+        def localProperties = new Properties()
+        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+        localProperties.getProperty(propertyName)
+    }
+
     buildTypes {
+        def googleMapsKey = "google_maps_key"
+
         debug {
-            def localProperties = new Properties()
-            localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-            it.resValue 'string', "google_maps_key", localProperties.getProperty('google.map.key.debug')
+            it.resValue 'string', googleMapsKey, getLocalPropertiesParam('google.map.key.debug')
         }
 
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            def localProperties = new Properties()
-            localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-            it.resValue 'string', "google_maps_key", localProperties.getProperty('google.map.key.release')
+            it.resValue 'string', googleMapsKey, getLocalPropertiesParam('google.map.key.release')
         }
     }
 
     buildTypes.each {
-        def localProperties = new Properties()
-        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-        it.resValue 'string', "foursquare_client_id_key", localProperties.getProperty('foursquare.client.IdKey')
-        it.resValue 'string', "foursquare_client_secret_key", localProperties.getProperty('foursquare.client.SecretKey')
+        it.resValue 'string', "foursquare_client_id_key", getLocalPropertiesParam('foursquare.client.IdKey')
+        it.resValue 'string', "foursquare_client_secret_key", getLocalPropertiesParam('foursquare.client.SecretKey')
     }
+
 
     lintOptions {
         abortOnError true
