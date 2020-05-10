@@ -1,4 +1,4 @@
-package org.grigoryfedorov.restaurantsmap.data.product.model
+package org.grigoryfedorov.restaurantsmap.data.venue.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -10,5 +10,8 @@ class ApiVenue(
     val name: String?,
 
     @SerializedName("location")
-    val location: ApiLocation?
+    val location: ApiLocation?,
+
+    @SerializedName("categories")
+    val categories: List<ApiVenueCategory>?
 )

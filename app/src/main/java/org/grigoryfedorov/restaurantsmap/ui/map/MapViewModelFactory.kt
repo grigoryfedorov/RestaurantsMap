@@ -11,16 +11,21 @@ class MapViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MapViewModel::class.java)) {
-
-            val module = MapModule(mainModule)
+            val mapViewModel: MapViewModel = createViewModel()
 
             @Suppress("UNCHECKED_CAST")
-            return MapViewModel(
-                module.mapInteractor,
-                mainModule.permissionChecker,
-                mainModule.locationManager
-            ) as T
+            return mapViewModel as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
+    }
+
+    private fun createViewModel(): MapViewModel {
+        val module = MapModule(mainModule)
+
+        return MapViewModel(
+            module.mapInteractor,
+            mainModule.permissionChecker,
+            mainModule.locationManager
+        )
     }
 }

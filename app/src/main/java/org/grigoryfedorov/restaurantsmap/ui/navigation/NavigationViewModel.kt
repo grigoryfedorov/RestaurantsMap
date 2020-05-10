@@ -16,6 +16,10 @@ class NavigationViewModel : ViewModel() {
         setScreen(Screen.Map)
     }
 
+    fun details(venueId: String) {
+        setScreen(Screen.Details(venueId))
+    }
+
     private fun setScreen(screen: Screen) {
         _screen.value = screen
     }

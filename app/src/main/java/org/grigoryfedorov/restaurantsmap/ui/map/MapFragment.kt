@@ -14,26 +14,29 @@ import org.grigoryfedorov.restaurantsmap.R
 import org.grigoryfedorov.restaurantsmap.di.MainModule
 import org.grigoryfedorov.restaurantsmap.domain.Location
 import org.grigoryfedorov.restaurantsmap.domain.Venue
+import org.grigoryfedorov.restaurantsmap.ui.navigation.NavigationViewModel
 import org.grigoryfedorov.restaurantsmap.util.permission.Permission
 import org.grigoryfedorov.restaurantsmap.util.permission.PermissionRequester
 
 
 class MapFragment(private val mainModule: MainModule)
-    : Fragment(R.layout.fragment_map) {
+    : Fragment(R.layout.map_fragment) {
 
     companion object {
-        private const val DEFAULT_ZOOM: Float = 11f
+        private const val DEFAULT_ZOOM: Float = 14f
     }
 
-    private var mMap: GoogleMap? = null
+    private var map: GoogleMap? = null
 
     private lateinit var viewModel: MapViewModel
+    private lateinit var navigationViewModel: NavigationViewModel
     private lateinit var permissionRequester: PermissionRequester
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         permissionRequester = createPermissionRequester()
         viewModel = getViewModel()
+        navigationViewModel = getNavigationViewModel()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,6 +70,10 @@ class MapFragment(private val mainModule: MainModule)
             .get(MapViewModel::class.java)
     }
 
+    private fun getNavigationViewModel(): NavigationViewModel {
+        return ViewModelProvider(requireActivity()).get(NavigationViewModel::class.java)
+    }
+
     private fun initViewModelObservers() {
         viewModel.permissionRequest.observe(viewLifecycleOwner, Observer {
             requestPermissions(it)
@@ -91,8 +98,8 @@ class MapFragment(private val mainModule: MainModule)
     }
 
     private fun processMapState(it: MapState) {
-        mMap?.isMyLocationEnabled = it.currentLocationEnabled
-        mMap?.uiSettings?.isMyLocationButtonEnabled = it.currentLocationButtonVisible
+        map?.isMyLocationEnabled = it.currentLocationEnabled
+        map?.uiSettings?.isMyLocationButtonEnabled = it.currentLocationButtonVisible
     }
 
     private fun requestPermissions(it: List<Permission>) {
@@ -103,16 +110,18 @@ class MapFragment(private val mainModule: MainModule)
 
     private fun showVenues(it: List<Venue>) {
         for (venue in it) {
-            mMap?.addMarker(
+            val marker = map?.addMarker(
                 MarkerOptions()
                     .position(mapLocationToLatLng(venue.location))
                     .title(venue.name)
+                    .snippet(venue.category)
             )
+            marker?.tag = venue.id
         }
     }
 
     private fun processCameraAction(it: CameraAction) {
-        mMap?.moveCamera(
+        map?.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 mapLocationToLatLng(it.location),
                 DEFAULT_ZOOM
@@ -132,17 +141,24 @@ class MapFragment(private val mainModule: MainModule)
             return
         }
 
-        mMap = googleMap
+        map = googleMap
         viewModel.onMapReady()
 
-        mMap?.setOnCameraIdleListener {
-            mMap?.cameraPosition?.target?.let {
+        map?.setOnCameraIdleListener {
+            map?.cameraPosition?.target?.let {
                 viewModel.onCameraIdle(
                     Location(
                         lat = it.latitude,
                         lon = it.longitude
                     )
                 )
+            }
+        }
+
+        map?.setOnInfoWindowClickListener {
+            val id: String? = it?.tag as? String
+            if (id != null) {
+                navigationViewModel.details(id)
             }
         }
     }

@@ -23,6 +23,8 @@ class MapViewModel(
 
     companion object {
         const val TAG = "MapViewModel"
+        const val RADIUS_METERS = 1000
+        const val VENUES_SEARCH_LIMIT = 50
     }
 
     val venues: LiveData<List<Venue>>
@@ -61,10 +63,10 @@ class MapViewModel(
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             kotlin.runCatching {
-                mapInteractor.getRestaurants(location)
-            }.onSuccess { restaurants ->
-                Log.i(TAG, "got rests $restaurants")
-                _venues.value = restaurants
+                mapInteractor.getVenues(location, RADIUS_METERS, VENUES_SEARCH_LIMIT)
+            }.onSuccess { venues ->
+                Log.i(TAG, "got rests $venues")
+                _venues.value = venues
             }.onFailure {
                 Log.w(TAG, "Error getting rests ${it.message}", it)
             }

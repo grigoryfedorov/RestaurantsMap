@@ -8,10 +8,10 @@ import org.grigoryfedorov.restaurantsmap.data.ClientKeyInterceptor
 import org.grigoryfedorov.restaurantsmap.data.OkHttpClientFactory
 import org.grigoryfedorov.restaurantsmap.data.host.FoursquareApiHostProvider
 import org.grigoryfedorov.restaurantsmap.data.host.HostProvider
-import org.grigoryfedorov.restaurantsmap.data.product.VenuesDataSource
-import org.grigoryfedorov.restaurantsmap.data.product.VenuesRepository
-import org.grigoryfedorov.restaurantsmap.data.product.VenuesRepositoryImpl
-import org.grigoryfedorov.restaurantsmap.data.product.VenuesService
+import org.grigoryfedorov.restaurantsmap.data.venue.VenuesDataSource
+import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepository
+import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepositoryImpl
+import org.grigoryfedorov.restaurantsmap.data.venue.VenuesService
 import org.grigoryfedorov.restaurantsmap.util.location.LocationManager
 import org.grigoryfedorov.restaurantsmap.util.permission.PermissionMapper
 import org.grigoryfedorov.restaurantsmap.util.resource.ResourceManager

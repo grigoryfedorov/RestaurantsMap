@@ -5,5 +5,9 @@ import org.grigoryfedorov.restaurantsmap.domain.Venue
 
 interface MapInteractor {
 
-    suspend fun getRestaurants(location: Location): List<Venue>
+    suspend fun getVenues(
+        location: Location,
+        radius: Int,
+        limit: Int
+    ): List<Venue>
 }
