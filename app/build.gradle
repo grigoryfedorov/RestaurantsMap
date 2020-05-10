@@ -21,6 +21,13 @@ android {
         }
     }
 
+    buildTypes.each {
+        def localProperties = new Properties()
+        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+        it.resValue 'string', "foursquare_client_id_key", localProperties.getProperty('foursquare.client.IdKey')
+        it.resValue 'string', "foursquare_client_secret_key", localProperties.getProperty('foursquare.client.SecretKey')
+    }
+
     lintOptions {
         abortOnError true
         warningsAsErrors true

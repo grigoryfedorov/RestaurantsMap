@@ -1,0 +1,7 @@
+# This file is for CI purpose only.
+# It is used to create fake local.properties file during build on remote server
+# You should add your own API keys below to local.properties on your local machine
+
+
+foursquare.client.IdKey=FAKE_FOURSQUARE_CLIENT_ID_KEY
+foursquare.client.SecretKey=FAKE_FOURSQUARE_CLIENT_SECRET_KEY

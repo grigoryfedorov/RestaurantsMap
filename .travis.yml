@@ -5,6 +5,9 @@ os: linux
 before_install:
   - yes | sdkmanager "platforms;android-28"
 
+before_script:
+  - cp local.properties.ci local.properties
+
 android:
   components:
     # The SDK version used to compile your project
