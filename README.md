@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.com/grigoryfedorov/RestaurantsMap.svg?branch=master)](https://travis-ci.com/grigoryfedorov/RestaurantsMap)
 
-WARNING: 
+WARNING: Google Maps and Foursquare APIs are used in this project. In order to get correctly working app you need to add your own API keys to local.properties file. You can use [local.properties.ci](https://github.com/grigoryfedorov/RestaurantsMap/blob/master/local.properties.ci) as sample.
+For Google Maps check [this](https://developers.google.com/maps/documentation/embed/get-api-key) and [this](https://developers.google.com/maps/gmp-get-started) links. [Userless auth](https://developer.foursquare.com/docs/places-api/authentication/#userless-auth) used for Foursquare see [link](https://developer.foursquare.com/docs/places-api/getting-started/) to get client keys.
 
 This application use a kind of Clean Architecture approach. 
 Kotlin Coroutines with Retrofit and Okhttp used for threading. 
