@@ -15,9 +15,19 @@ android {
     }
 
     buildTypes {
+        debug {
+            def localProperties = new Properties()
+            localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+            it.resValue 'string', "google_maps_key", localProperties.getProperty('google.map.key.debug')
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            def localProperties = new Properties()
+            localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+            it.resValue 'string', "google_maps_key", localProperties.getProperty('google.map.key.release')
         }
     }
 
