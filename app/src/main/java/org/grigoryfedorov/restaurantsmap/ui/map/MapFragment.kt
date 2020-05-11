@@ -12,10 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import org.grigoryfedorov.restaurantsmap.R
 import org.grigoryfedorov.restaurantsmap.di.MainModule
 import org.grigoryfedorov.restaurantsmap.domain.Location
@@ -162,6 +159,7 @@ class MapFragment(private val mainModule: MainModule)
         map = googleMap
         viewModel.onMapReady()
 
+        map?.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
         map?.setOnCameraIdleListener {
             map?.cameraPosition?.target?.let {
                 viewModel.onCameraIdle(
