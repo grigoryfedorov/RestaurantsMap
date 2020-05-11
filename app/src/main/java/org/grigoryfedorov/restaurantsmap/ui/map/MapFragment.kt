@@ -1,13 +1,19 @@
 package org.grigoryfedorov.restaurantsmap.ui.map
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import org.grigoryfedorov.restaurantsmap.R
@@ -31,6 +37,7 @@ class MapFragment(private val mainModule: MainModule)
     private lateinit var viewModel: MapViewModel
     private lateinit var navigationViewModel: NavigationViewModel
     private lateinit var permissionRequester: PermissionRequester
+    private var markerIcon: BitmapDescriptor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +50,7 @@ class MapFragment(private val mainModule: MainModule)
         super.onViewCreated(view, savedInstanceState)
         initViewModelObservers()
         initMap()
+        markerIcon = bitmapDescriptorFromVector(requireContext(), R.drawable.ic_place)
     }
 
     override fun onStart() {
@@ -112,11 +120,21 @@ class MapFragment(private val mainModule: MainModule)
         for (venue in it) {
             val marker = map?.addMarker(
                 MarkerOptions()
+                    .icon(markerIcon)
                     .position(mapLocationToLatLng(venue.location))
                     .title(venue.name)
                     .snippet(venue.category)
             )
             marker?.tag = venue.id
+        }
+    }
+
+    private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
+        return ContextCompat.getDrawable(context, vectorResId)?.run {
+            setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+            val bitmap = Bitmap.createBitmap(intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888)
+            draw(Canvas(bitmap))
+            BitmapDescriptorFactory.fromBitmap(bitmap)
         }
     }
 
