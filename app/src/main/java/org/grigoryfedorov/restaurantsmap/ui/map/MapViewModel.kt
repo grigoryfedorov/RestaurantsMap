@@ -44,6 +44,8 @@ class MapViewModel(
     private var searchJob: Job? = null
     private var locationJob: Job? = null
 
+    private var isCameraMoved = false
+
     fun onStart() {
     }
 
@@ -73,6 +75,10 @@ class MapViewModel(
         }
     }
 
+    fun onCameraMoveStarted() {
+        isCameraMoved = true
+    }
+
     fun onPermissionResult() {
         val hasLocationPermission = hasLocationPermission()
         setCurrentLocationEnabled(hasLocationPermission())
@@ -100,7 +106,9 @@ class MapViewModel(
             runCatching {
                 locationManager.requestLocation()
             }.onSuccess {
-                _cameraAction.value = CameraAction(it)
+                if (!isCameraMoved) {
+                    _cameraAction.value = CameraAction(it)
+                }
             }.onFailure {
                 Log.w(TAG, "Could not get current location ${it.message}", it)
             }

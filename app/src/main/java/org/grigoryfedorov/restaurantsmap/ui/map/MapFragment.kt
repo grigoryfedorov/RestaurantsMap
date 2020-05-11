@@ -171,6 +171,10 @@ class MapFragment(private val mainModule: MainModule)
             }
         }
 
+        map?.setOnCameraMoveStartedListener {
+            viewModel.onCameraMoveStarted()
+        }
+
         map?.setOnInfoWindowClickListener {
             val id: String? = it?.tag as? String
             if (id != null) {
