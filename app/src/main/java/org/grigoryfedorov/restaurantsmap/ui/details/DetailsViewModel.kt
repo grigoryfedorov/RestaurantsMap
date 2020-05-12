@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.grigoryfedorov.restaurantsmap.domain.VenueDetails
 import org.grigoryfedorov.restaurantsmap.interactor.DetailsInteractor
@@ -29,9 +30,10 @@ class DetailsViewModel(
     fun onStart() {
         getDetailsJob = viewModelScope.launch {
             runCatching {
-                detailsInteractor.getDetails(venueId)
-            }.onSuccess {
-                _details.value = it
+                detailsInteractor.getDetails(venueId).collect {
+                    Log.i(TAG, "Got details for $venueId $it")
+                    _details.value = it
+                }
             }.onFailure {
                 Log.w(TAG, "Error getting details for venue $venueId ${it.message}", it)
             }

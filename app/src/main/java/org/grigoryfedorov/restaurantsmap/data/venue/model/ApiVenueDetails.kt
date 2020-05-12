@@ -26,5 +26,4 @@ data class ApiVenueDetails(
 
     @SerializedName("bestPhoto")
     val bestPhoto: ApiVenuePhoto?
-
 )

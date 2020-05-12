@@ -10,10 +10,11 @@ import retrofit2.http.Query
 interface VenuesService {
     @GET("v2/venues/search")
     suspend fun search(
-        @Query("ll") ll: String,
-        @Query("radius") radius: Int,
+        @Query("ne") northEast: String,
+        @Query("sw") southWest: String,
         @Query("limit") limit: Int,
-        @Query("categoryId") categoryId: String
+        @Query("categoryId") categoryId: String,
+        @Query("intent") intent: String
     ): ApiResponseWrapper<ApiVenuesSearchResponse>
 
     @GET("/v2/venues/{id}")

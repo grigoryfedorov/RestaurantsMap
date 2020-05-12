@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -12,10 +13,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.MapStyleOptions
 import org.grigoryfedorov.restaurantsmap.R
 import org.grigoryfedorov.restaurantsmap.di.MainModule
 import org.grigoryfedorov.restaurantsmap.domain.Location
+import org.grigoryfedorov.restaurantsmap.domain.LocationBox
 import org.grigoryfedorov.restaurantsmap.domain.Venue
 import org.grigoryfedorov.restaurantsmap.ui.navigation.NavigationViewModel
 import org.grigoryfedorov.restaurantsmap.util.permission.Permission
@@ -47,12 +53,7 @@ class MapFragment(private val mainModule: MainModule)
         super.onViewCreated(view, savedInstanceState)
         initViewModelObservers()
         initMap()
-        markerIcon = bitmapDescriptorFromVector(requireContext(), R.drawable.ic_place)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.onStart()
+        markerIcon = bitmapDescriptorFromVector(requireContext(), R.drawable.ic_pin)
     }
 
     override fun onStop() {
@@ -118,7 +119,7 @@ class MapFragment(private val mainModule: MainModule)
             val marker = map?.addMarker(
                 MarkerOptions()
                     .icon(markerIcon)
-                    .position(mapLocationToLatLng(venue.location))
+                    .position(mapLocationToLatLng(venue.location.location))
                     .title(venue.name)
                     .snippet(venue.category)
             )
@@ -161,12 +162,14 @@ class MapFragment(private val mainModule: MainModule)
 
         map?.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
         map?.setOnCameraIdleListener {
-            map?.cameraPosition?.target?.let {
+            Log.i("Zoom", "cur zoom ${map?.cameraPosition?.zoom}")
+            map?.projection?.visibleRegion?.latLngBounds?.let {
                 viewModel.onCameraIdle(
-                    Location(
-                        lat = it.latitude,
-                        lon = it.longitude
-                    )
+                    LocationBox(
+                        northEast = mapLocation(it.northeast),
+                        southWest = mapLocation(it.southwest)
+                    ),
+                    map?.cameraPosition?.zoom ?: 0F
                 )
             }
         }
@@ -181,6 +184,13 @@ class MapFragment(private val mainModule: MainModule)
                 navigationViewModel.details(id)
             }
         }
+    }
+
+    private fun mapLocation(latLng: LatLng): Location {
+        return Location(
+            lat = latLng.latitude,
+            lon = latLng.longitude
+        )
     }
 
 }

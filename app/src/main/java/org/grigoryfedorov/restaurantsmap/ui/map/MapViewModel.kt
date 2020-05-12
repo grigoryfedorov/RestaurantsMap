@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.grigoryfedorov.restaurantsmap.domain.Location
+import org.grigoryfedorov.restaurantsmap.domain.LocationBox
 import org.grigoryfedorov.restaurantsmap.domain.Venue
 import org.grigoryfedorov.restaurantsmap.interactor.MapInteractor
 import org.grigoryfedorov.restaurantsmap.ui.SingleLiveEvent
@@ -23,8 +23,7 @@ class MapViewModel(
 
     companion object {
         const val TAG = "MapViewModel"
-        const val RADIUS_METERS = 1000
-        const val VENUES_SEARCH_LIMIT = 50
+        const val MIN_ZOOM_TO_SEARCH = 11F
     }
 
     val venues: LiveData<List<Venue>>
@@ -46,10 +45,11 @@ class MapViewModel(
 
     private var isCameraMoved = false
 
-    fun onStart() {
-    }
+    private val shownVenues = HashSet<String>()
 
     fun onMapReady() {
+        shownVenues.clear()
+
         val hasLocationPermission = hasLocationPermission()
 
         setCurrentLocationEnabled(hasLocationPermission)
@@ -60,15 +60,36 @@ class MapViewModel(
         }
     }
 
-    fun onCameraIdle(location: Location) {
-        Log.i(TAG, "onCameraIdle loc $location")
+    fun onCameraIdle(
+        locationBox: LocationBox,
+        zoom: Float
+    ) {
+        Log.i(TAG, "onCameraIdle new $locationBox zoom $zoom")
+
+        if (zoom >= MIN_ZOOM_TO_SEARCH) {
+            searchVenues(locationBox)
+        }
+    }
+
+    private fun searchVenues(locationBox: LocationBox) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             kotlin.runCatching {
-                mapInteractor.getVenues(location, RADIUS_METERS, VENUES_SEARCH_LIMIT)
+                mapInteractor.getVenues(locationBox)
             }.onSuccess { venues ->
                 Log.i(TAG, "got rests $venues")
-                _venues.value = venues
+
+                val venuesToShow = venues.filter {
+                    !shownVenues.contains(it.id)
+                }
+
+                val newVenuesIds = venues.map {
+                    it.id
+                }
+
+                shownVenues.addAll(newVenuesIds)
+
+                _venues.value = venuesToShow
             }.onFailure {
                 Log.w(TAG, "Error getting rests ${it.message}", it)
             }

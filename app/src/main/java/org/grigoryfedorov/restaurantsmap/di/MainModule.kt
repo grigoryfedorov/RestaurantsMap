@@ -9,9 +9,10 @@ import org.grigoryfedorov.restaurantsmap.data.OkHttpClientFactory
 import org.grigoryfedorov.restaurantsmap.data.host.FoursquareApiHostProvider
 import org.grigoryfedorov.restaurantsmap.data.host.HostProvider
 import org.grigoryfedorov.restaurantsmap.data.venue.VenuesDataSource
+import org.grigoryfedorov.restaurantsmap.data.venue.VenuesLocalDataSource
 import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepository
-import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepositoryImpl
 import org.grigoryfedorov.restaurantsmap.data.venue.VenuesService
+import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepositoryImpl
 import org.grigoryfedorov.restaurantsmap.util.location.LocationManager
 import org.grigoryfedorov.restaurantsmap.util.permission.PermissionMapper
 import org.grigoryfedorov.restaurantsmap.util.resource.ResourceManager
@@ -67,7 +68,8 @@ class MainModule(context: Context) {
 
 
         val venuesDataSource = VenuesDataSource(service)
+        val venueLocalDataSource = VenuesLocalDataSource()
 
-        return VenuesRepositoryImpl(venuesDataSource)
+        return VenuesRepositoryImpl(venuesDataSource, venueLocalDataSource)
     }
 }

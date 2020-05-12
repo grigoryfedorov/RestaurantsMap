@@ -83,8 +83,8 @@ class DetailsFragment(private val mainModule: MainModule)
     private fun initViewModelObservers() {
         viewModel.details.observe(viewLifecycleOwner, Observer {
             binding.apply {
-                detailsName.text = it.name
-                detailsCategory.text = it.category ?: ""
+                detailsName.text = it.venue.name
+                detailsCategory.text = it.venue.category ?: ""
                 detailsOpenStatus.text = it.hoursStatus ?: ""
                 detailsRating.text = if (it.rating != null) "${it.rating}" else ""
             }

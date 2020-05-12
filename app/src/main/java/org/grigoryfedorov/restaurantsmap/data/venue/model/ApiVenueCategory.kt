@@ -14,6 +14,4 @@ data class ApiVenueCategory(
 
     @SerializedName("primary")
     val primary: Boolean?
-
-
 )

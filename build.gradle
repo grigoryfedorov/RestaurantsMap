@@ -35,4 +35,9 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
+detekt {
+    input = files("$projectDir")
+    failFast = true
+}
+
 apply plugin: 'io.gitlab.arturbosch.detekt'
