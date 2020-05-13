@@ -51,6 +51,8 @@ comments:
     active: false
   UndocumentedPublicProperty:
     active: false
+  AbsentOrWrongFileLicense:
+    active: false
 
 complexity:
   active: true
@@ -77,10 +79,6 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
-  LongParameterList:
-    active: true
-    threshold: 6
-    ignoreDefaultParameters: false
   MethodOverloading:
     active: false
     threshold: 6
