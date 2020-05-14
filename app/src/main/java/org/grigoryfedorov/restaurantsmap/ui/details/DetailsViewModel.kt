@@ -8,12 +8,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.grigoryfedorov.restaurantsmap.domain.VenueDetails
+import org.grigoryfedorov.restaurantsmap.R
 import org.grigoryfedorov.restaurantsmap.interactor.DetailsInteractor
+import org.grigoryfedorov.restaurantsmap.util.resource.ResourceManager
 
 class DetailsViewModel(
     private val venueId: String,
-    private val detailsInteractor: DetailsInteractor
+    private val detailsInteractor: DetailsInteractor,
+    private val resourceManager: ResourceManager
 ) : ViewModel() {
 
     companion object {
@@ -22,20 +24,22 @@ class DetailsViewModel(
 
     private var getDetailsJob: Job? = null
 
-    val details: LiveData<VenueDetails>
-        get() = _details
+    val state: LiveData<DetailsState>
+        get() = _state
 
-    private val _details = MutableLiveData<VenueDetails>()
+    private val _state = MutableLiveData<DetailsState>()
 
     fun onStart() {
+        _state.value = DetailsState.Progress
         getDetailsJob = viewModelScope.launch {
             runCatching {
                 detailsInteractor.getDetails(venueId).collect {
                     Log.i(TAG, "Got details for $venueId $it")
-                    _details.value = it
+                    _state.value = DetailsState.Content(it)
                 }
             }.onFailure {
                 Log.w(TAG, "Error getting details for venue $venueId ${it.message}", it)
+                _state.value = DetailsState.Error(resourceManager.string(R.string.venue_details_error_))
             }
         }
 

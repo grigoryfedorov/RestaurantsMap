@@ -10,8 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import org.grigoryfedorov.restaurantsmap.databinding.DetailsFragmentBinding
 import org.grigoryfedorov.restaurantsmap.di.MainModule
 
-class DetailsFragment(private val mainModule: MainModule)
-    : Fragment() {
+class DetailsFragment(private val mainModule: MainModule) : Fragment() {
 
     companion object {
         private const val ARG_VENUE_ID = "arg_venue_id"
@@ -31,6 +30,7 @@ class DetailsFragment(private val mainModule: MainModule)
     private lateinit var viewModel: DetailsViewModel
 
     private var _binding: DetailsFragmentBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -81,17 +81,44 @@ class DetailsFragment(private val mainModule: MainModule)
     }
 
     private fun initViewModelObservers() {
-        viewModel.details.observe(viewLifecycleOwner, Observer {
-            binding.apply {
-                detailsName.text = it.venue.name
-                detailsCategory.text = it.venue.category ?: ""
-                detailsOpenStatus.text = it.hoursStatus ?: ""
-                detailsRating.text = if (it.rating != null) "${it.rating}" else ""
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            hideAll()
+            when (it) {
+                DetailsState.Progress -> showProgress()
+                is DetailsState.Content -> showContent(it)
+                is DetailsState.Error -> showError(it)
             }
         })
     }
 
+    private fun showError(errorState: DetailsState.Error) {
+        binding.apply {
+            detailsError.visibility = View.VISIBLE
+            detailsError.text = errorState.message
+        }
+    }
 
+    private fun hideAll() {
+        binding.apply {
+            detailsContent.visibility = View.GONE
+            detailsProgress.visibility = View.GONE
+            detailsError.visibility = View.GONE
+        }
+    }
+
+    private fun showContent(contentState: DetailsState.Content) {
+        binding.apply {
+            detailsContent.visibility = View.VISIBLE
+            detailsName.text = contentState.venueDetails.venue.name
+            detailsCategory.text = contentState.venueDetails.venue.category ?: ""
+            detailsOpenStatus.text = contentState.venueDetails.hoursStatus ?: ""
+            detailsRating.text = if (contentState.venueDetails.rating != null) "${contentState.venueDetails.rating}" else ""
+        }
+    }
+
+    private fun showProgress() {
+        binding.detailsProgress.visibility = View.VISIBLE
+    }
 
 
 }

@@ -22,6 +22,10 @@ class DetailsViewModelFactory(
 
     private fun createViewModel(): DetailsViewModel {
         val detailsModule = DetailsModule(mainModule)
-        return DetailsViewModel(venueId, detailsModule.detailsInteractor)
+        return DetailsViewModel(
+            venueId,
+            detailsModule.detailsInteractor,
+            mainModule.resourceManager
+        )
     }
 }

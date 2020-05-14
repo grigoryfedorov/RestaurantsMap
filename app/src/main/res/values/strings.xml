@@ -4,4 +4,5 @@
     <string name="location_disabled_message">To detect current position, you need to enable location access in app settings</string>
     <string name="location_disabled_positive_button">Settings</string>
     <string name="location_disabled_negative_button">Cancel</string>
+    <string name="venue_details_error_">Something went wrong</string>
 </resources>
