@@ -8,11 +8,13 @@ import org.grigoryfedorov.restaurantsmap.data.ClientKeyInterceptor
 import org.grigoryfedorov.restaurantsmap.data.OkHttpClientFactory
 import org.grigoryfedorov.restaurantsmap.data.host.FoursquareApiHostProvider
 import org.grigoryfedorov.restaurantsmap.data.host.HostProvider
-import org.grigoryfedorov.restaurantsmap.data.venue.VenuesDataSource
-import org.grigoryfedorov.restaurantsmap.data.venue.VenuesLocalDataSource
+import org.grigoryfedorov.restaurantsmap.data.venue.LocationKeyMapper
 import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepository
 import org.grigoryfedorov.restaurantsmap.data.venue.VenuesService
 import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepositoryImpl
+import org.grigoryfedorov.restaurantsmap.data.venue.VenueSearchCache
+import org.grigoryfedorov.restaurantsmap.data.venue.VenueDetailsCache
+import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRemoteDataSource
 import org.grigoryfedorov.restaurantsmap.util.location.LocationManager
 import org.grigoryfedorov.restaurantsmap.util.permission.PermissionMapper
 import org.grigoryfedorov.restaurantsmap.util.resource.ResourceManager
@@ -38,8 +40,6 @@ class MainModule(context: Context) {
                 permissionMapper
             )
         locationManager = LocationManager(context)
-
-
     }
 
 
@@ -66,10 +66,11 @@ class MainModule(context: Context) {
 
         val service = retrofit.create(VenuesService::class.java)
 
+        val locationKeyMapper = LocationKeyMapper()
+        val venueSearchCache = VenueSearchCache(locationKeyMapper)
+        val venueDetailsCache = VenueDetailsCache()
+        val venuesRemoteDataSource = VenuesRemoteDataSource(service)
 
-        val venuesDataSource = VenuesDataSource(service)
-        val venueLocalDataSource = VenuesLocalDataSource()
-
-        return VenuesRepositoryImpl(venuesDataSource, venueLocalDataSource)
+        return VenuesRepositoryImpl(venuesRemoteDataSource, venueSearchCache, venueDetailsCache)
     }
 }

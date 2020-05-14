@@ -1,5 +1,6 @@
 package org.grigoryfedorov.restaurantsmap.interactor
 
+import kotlinx.coroutines.flow.Flow
 import org.grigoryfedorov.restaurantsmap.data.venue.VenuesRepository
 import org.grigoryfedorov.restaurantsmap.domain.LocationBox
 import org.grigoryfedorov.restaurantsmap.domain.Venue
@@ -11,7 +12,7 @@ class MapInteractorImpl(
 
     override suspend fun getVenues(
         locationBox: LocationBox
-    ): List<Venue> {
+    ): Flow<Set<Venue>> {
         return venuesRepository.search(
             locationBox = locationBox,
             category = VenueCategory.FOOD

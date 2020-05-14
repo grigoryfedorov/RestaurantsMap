@@ -7,9 +7,11 @@ import org.grigoryfedorov.restaurantsmap.domain.VenueCategory
 import org.grigoryfedorov.restaurantsmap.domain.VenueDetails
 
 interface VenuesRepository {
+
     suspend fun search(
         locationBox: LocationBox,
         category: VenueCategory
-    ): List<Venue>
+    ): Flow<Set<Venue>>
+
     suspend fun getDetails(venueId: String): Flow<VenueDetails>
 }

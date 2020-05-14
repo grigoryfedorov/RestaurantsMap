@@ -47,6 +47,7 @@ class MapFragment(private val mainModule: MainModule)
         permissionRequester = createPermissionRequester()
         viewModel = getViewModel()
         navigationViewModel = getNavigationViewModel()
+        viewModel.onCreate()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,12 +115,12 @@ class MapFragment(private val mainModule: MainModule)
         }
     }
 
-    private fun showVenues(it: List<Venue>) {
-        for (venue in it) {
+    private fun showVenues(venues: List<Venue>) {
+        for (venue in venues) {
             val marker = map?.addMarker(
                 MarkerOptions()
                     .icon(markerIcon)
-                    .position(mapLocationToLatLng(venue.location.location))
+                    .position(mapLocationToLatLng(venue.venueLocation.location))
                     .title(venue.name)
                     .snippet(venue.category)
             )

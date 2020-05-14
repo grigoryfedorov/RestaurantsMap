@@ -14,7 +14,7 @@ import org.grigoryfedorov.restaurantsmap.domain.VenueDetails
 import org.grigoryfedorov.restaurantsmap.domain.VenueLocation
 import java.io.IOException
 
-class VenuesDataSource(private val venuesService: VenuesService) {
+class VenuesRemoteDataSource(private val venuesService: VenuesService) {
 
     companion object {
         const val CATEGORY_FOOD = "4d4b7105d754a06374d81259"
@@ -42,13 +42,13 @@ class VenuesDataSource(private val venuesService: VenuesService) {
         }
     }
 
-    private fun mapLocation(location: Location): String {
-        return "${location.lat},${location.lon}"
-    }
-
     suspend fun getDetails(id: String): VenueDetails {
         val venueDetails = venuesService.getDetails(id).response?.venueDetails
         return mapVenueDetails(venueDetails) ?: throw IOException("Parse error")
+    }
+
+    private fun mapLocation(location: Location): String {
+        return "${location.lat},${location.lon}"
     }
 
     private fun mapVenueDetails(venueDetails: ApiVenueDetails?): VenueDetails? {
@@ -56,7 +56,7 @@ class VenuesDataSource(private val venuesService: VenuesService) {
             Venue(
                 id = venueDetails?.id ?: return null,
                 name = venueDetails.name ?: return null,
-                location = mapLocation(venueDetails.location) ?: return null,
+                venueLocation = mapLocation(venueDetails.location) ?: return null,
                 category = mapCategory(venueDetails.categories)
             ),
             rating = venueDetails.rating,
@@ -88,7 +88,7 @@ class VenuesDataSource(private val venuesService: VenuesService) {
         return Venue(
             id = apiVenue.id ?: return null,
             name = apiVenue.name ?: return null,
-            location = mapLocation(apiVenue.location) ?: return null,
+            venueLocation = mapLocation(apiVenue.location) ?: return null,
             category = mapCategory(apiVenue.categories)
         )
     }
@@ -108,7 +108,6 @@ class VenuesDataSource(private val venuesService: VenuesService) {
         return when (venueCategory) {
             VenueCategory.FOOD -> CATEGORY_FOOD
         }
-
     }
 
 }

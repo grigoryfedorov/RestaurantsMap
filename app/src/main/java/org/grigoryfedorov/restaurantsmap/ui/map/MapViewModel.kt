@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.grigoryfedorov.restaurantsmap.domain.LocationBox
 import org.grigoryfedorov.restaurantsmap.domain.Venue
@@ -47,8 +48,11 @@ class MapViewModel(
 
     private val shownVenues = HashSet<String>()
 
-    fun onMapReady() {
+    fun onCreate() {
         shownVenues.clear()
+    }
+
+    fun onMapReady() {
 
         val hasLocationPermission = hasLocationPermission()
 
@@ -76,20 +80,22 @@ class MapViewModel(
         searchJob = viewModelScope.launch {
             kotlin.runCatching {
                 mapInteractor.getVenues(locationBox)
-            }.onSuccess { venues ->
-                Log.i(TAG, "got rests $venues")
+                    .collect { newVenues ->
+                        Log.i(TAG, "got venues ${newVenues.size} ")
 
-                val venuesToShow = venues.filter {
-                    !shownVenues.contains(it.id)
-                }
+                        val venuesToShow = newVenues.filter {
+                            !shownVenues.contains(it.id)
+                        }
 
-                val newVenuesIds = venues.map {
-                    it.id
-                }
+                        val newVenuesIds = venuesToShow.map {
+                            it.id
+                        }
 
-                shownVenues.addAll(newVenuesIds)
+                        shownVenues.addAll(newVenuesIds)
 
-                _venues.value = venuesToShow
+                        _venues.value = venuesToShow
+                    }
+                Log.i(TAG, "finish search ")
             }.onFailure {
                 Log.w(TAG, "Error getting rests ${it.message}", it)
             }
