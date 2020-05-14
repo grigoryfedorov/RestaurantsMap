@@ -35,11 +35,14 @@ class MapViewModel(
         get() = _mapState
     val cameraAction: LiveData<CameraAction>
         get() = _cameraAction
+    val userAction: LiveData<UserAction>
+        get() = _userAction
 
     private val _venues = SingleLiveEvent<List<Venue>>()
     private val _permissionRequest = SingleLiveEvent<List<Permission>>()
     private val _mapState = MutableLiveData<MapState>()
     private val _cameraAction = SingleLiveEvent<CameraAction>()
+    private val _userAction = SingleLiveEvent<UserAction>()
 
     private var searchJob: Job? = null
     private var locationJob: Job? = null
@@ -63,6 +66,13 @@ class MapViewModel(
             requestLocationPermission()
         }
     }
+
+    fun onMyLocationButtonClick() {
+        if (!locationManager.isLocationEnabled()) {
+            _userAction.value = UserAction.LocationEnablePrompt
+        }
+    }
+
 
     fun onCameraIdle(
         locationBox: LocationBox,

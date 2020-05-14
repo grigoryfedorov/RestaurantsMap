@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RestaurantsMap</string>
+    <string name="location_disabled_title">Location disabled</string>
+    <string name="location_disabled_message">To detect current position, you need to enable location access in app settings</string>
+    <string name="location_disabled_positive_button">Settings</string>
+    <string name="location_disabled_negative_button">Cancel</string>
 </resources>

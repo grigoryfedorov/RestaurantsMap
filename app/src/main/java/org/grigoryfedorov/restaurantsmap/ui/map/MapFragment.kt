@@ -1,10 +1,12 @@
 package org.grigoryfedorov.restaurantsmap.ui.map
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
-import android.util.Log
+import android.provider.Settings
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -13,11 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.*
 import org.grigoryfedorov.restaurantsmap.R
 import org.grigoryfedorov.restaurantsmap.di.MainModule
 import org.grigoryfedorov.restaurantsmap.domain.Location
@@ -97,6 +95,10 @@ class MapFragment(private val mainModule: MainModule)
         viewModel.cameraAction.observe(viewLifecycleOwner, Observer {
             processCameraAction(it)
         })
+
+        viewModel.userAction.observe(viewLifecycleOwner, Observer {
+            processUserAction(it)
+        })
     }
 
     private fun initMap() {
@@ -106,7 +108,7 @@ class MapFragment(private val mainModule: MainModule)
 
     private fun processMapState(it: MapState) {
         map?.isMyLocationEnabled = it.currentLocationEnabled
-        map?.uiSettings?.isMyLocationButtonEnabled = it.currentLocationButtonVisible
+        map?.uiSettings?.isMyLocationButtonEnabled = true
     }
 
     private fun requestPermissions(it: List<Permission>) {
@@ -146,6 +148,29 @@ class MapFragment(private val mainModule: MainModule)
         )
     }
 
+    private fun processUserAction(it: UserAction) {
+        when(it) {
+            UserAction.LocationEnablePrompt -> {
+                showLocationEnableDialog()
+            }
+       }
+    }
+
+    private fun showLocationEnableDialog() {
+        AlertDialog.Builder(context)
+            .setTitle(R.string.location_disabled_title)
+            .setMessage(R.string.location_disabled_message)
+            .setPositiveButton(R.string.location_disabled_positive_button
+            ) { _, _ ->
+                requireActivity().startActivity(
+                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                )
+            }
+            .setNegativeButton(R.string.location_disabled_negative_button, null)
+            .show()
+    }
+
+
     private fun mapLocationToLatLng(location: Location): LatLng {
         return LatLng(
             location.lat,
@@ -163,7 +188,6 @@ class MapFragment(private val mainModule: MainModule)
 
         map?.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
         map?.setOnCameraIdleListener {
-            Log.i("Zoom", "cur zoom ${map?.cameraPosition?.zoom}")
             map?.projection?.visibleRegion?.latLngBounds?.let {
                 viewModel.onCameraIdle(
                     LocationBox(
@@ -184,6 +208,11 @@ class MapFragment(private val mainModule: MainModule)
             if (id != null) {
                 navigationViewModel.details(id)
             }
+        }
+
+        map?.setOnMyLocationButtonClickListener {
+            viewModel.onMyLocationButtonClick()
+            false
         }
     }
 

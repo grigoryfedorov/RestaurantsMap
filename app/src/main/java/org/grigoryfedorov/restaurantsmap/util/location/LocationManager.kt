@@ -1,6 +1,7 @@
 package org.grigoryfedorov.restaurantsmap.util.location
 
 import android.content.Context
+import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
@@ -13,6 +14,9 @@ class LocationManager(context: Context) {
     private val locationProviderClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
+    private val locationManager = context.getSystemService(Context.LOCATION_SERVICE)
+            as? android.location.LocationManager
+
     suspend fun requestLocation() = suspendCoroutine<Location> { continuation ->
         locationProviderClient.lastLocation
             .addOnCompleteListener { task ->
@@ -22,6 +26,12 @@ class LocationManager(context: Context) {
             }.addOnFailureListener {
                 continuation.resumeWith(Result.failure(it))
             }
+    }
+
+    fun isLocationEnabled(): Boolean {
+        return locationManager?.let {
+            LocationManagerCompat.isLocationEnabled(it)
+        } ?: false
     }
 
     private fun processCompletedTask(
