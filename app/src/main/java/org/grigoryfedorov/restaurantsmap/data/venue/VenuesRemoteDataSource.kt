@@ -66,8 +66,10 @@ class VenuesRemoteDataSource(private val venuesService: VenuesService) {
     }
 
     private fun mapBestPhoto(bestPhoto: ApiVenuePhoto?): String? {
-        val suffix: String = bestPhoto?.suffix ?: ""
-        return bestPhoto?.prefix + suffix
+        if (bestPhoto?.prefix == null || bestPhoto.suffix == null) {
+            return null
+        }
+        return "${bestPhoto.prefix}original${bestPhoto.suffix}"
     }
 
     private fun mapHours(hours: ApiVenueHours?): String? {

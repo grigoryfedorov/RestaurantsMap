@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.grigoryfedorov.restaurantsmap.R
+import org.grigoryfedorov.restaurantsmap.domain.VenueDetails
 import org.grigoryfedorov.restaurantsmap.interactor.DetailsInteractor
 import org.grigoryfedorov.restaurantsmap.util.resource.ResourceManager
 
@@ -34,8 +35,7 @@ class DetailsViewModel(
         getDetailsJob = viewModelScope.launch {
             runCatching {
                 detailsInteractor.getDetails(venueId).collect {
-                    Log.i(TAG, "Got details for $venueId $it")
-                    _state.value = DetailsState.Content(it)
+                    _state.value = mapVenueToContent(it)
                 }
             }.onFailure {
                 Log.w(TAG, "Error getting details for venue $venueId ${it.message}", it)
@@ -47,6 +47,22 @@ class DetailsViewModel(
 
     fun onStop() {
         getDetailsJob?.cancel()
+    }
+
+    private fun mapVenueToContent(venueDetails: VenueDetails): DetailsState.Content {
+        val ratingString = if (venueDetails.rating != null) {
+            venueDetails.rating.toString()
+        } else {
+            null
+        }
+
+        return DetailsState.Content(
+            venueDetails.venue.name,
+            venueDetails.venue.category,
+            ratingString,
+            venueDetails.hoursStatus,
+            venueDetails.bestPhoto
+        )
     }
 
 }

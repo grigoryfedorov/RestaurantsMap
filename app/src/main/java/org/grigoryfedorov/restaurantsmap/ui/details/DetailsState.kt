@@ -1,12 +1,14 @@
 package org.grigoryfedorov.restaurantsmap.ui.details
 
-import org.grigoryfedorov.restaurantsmap.domain.VenueDetails
-
 sealed class DetailsState {
     object Progress: DetailsState()
 
     data class Content(
-        val venueDetails: VenueDetails
+        val name: String,
+        val category: String?,
+        val rating: String?,
+        val openStatus: String?,
+        val image: String?
     ) : DetailsState()
 
     data class Error(

@@ -2,8 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
     <ProgressBar
         android:id="@+id/details_progress"
@@ -16,6 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:layout_marginStart="@dimen/details_content_margin_start"
+        android:layout_marginEnd="@dimen/details_content_margin_end"
         android:layout_gravity="center"/>
 
     <LinearLayout
@@ -25,23 +26,38 @@
         android:orientation="vertical"
         tools:context=".ui.details.DetailsFragment">
 
+        <ImageView
+            android:id="@+id/details_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+
         <TextView
             android:id="@+id/details_name"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="@dimen/details_content_margin_start"
+            android:layout_marginEnd="@dimen/details_content_margin_end"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/details_category"
+            android:layout_marginStart="@dimen/details_content_margin_start"
+            android:layout_marginEnd="@dimen/details_content_margin_end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/details_rating"
+            android:layout_marginStart="@dimen/details_content_margin_start"
+            android:layout_marginEnd="@dimen/details_content_margin_end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/details_open_status"
+            android:layout_marginStart="@dimen/details_content_margin_start"
+            android:layout_marginEnd="@dimen/details_content_margin_end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

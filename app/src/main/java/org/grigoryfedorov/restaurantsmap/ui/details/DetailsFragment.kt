@@ -1,5 +1,6 @@
 package org.grigoryfedorov.restaurantsmap.ui.details
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,8 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
+import org.grigoryfedorov.restaurantsmap.R
 import org.grigoryfedorov.restaurantsmap.databinding.DetailsFragmentBinding
 import org.grigoryfedorov.restaurantsmap.di.MainModule
+
 
 class DetailsFragment(private val mainModule: MainModule) : Fragment() {
 
@@ -109,10 +115,21 @@ class DetailsFragment(private val mainModule: MainModule) : Fragment() {
     private fun showContent(contentState: DetailsState.Content) {
         binding.apply {
             detailsContent.visibility = View.VISIBLE
-            detailsName.text = contentState.venueDetails.venue.name
-            detailsCategory.text = contentState.venueDetails.venue.category ?: ""
-            detailsOpenStatus.text = contentState.venueDetails.hoursStatus ?: ""
-            detailsRating.text = if (contentState.venueDetails.rating != null) "${contentState.venueDetails.rating}" else ""
+            detailsName.text = contentState.name
+            detailsCategory.text = contentState.category ?: ""
+            detailsOpenStatus.text = contentState.openStatus ?: ""
+            detailsRating.text = contentState.rating ?: ""
+
+            val factory =
+                DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build()
+
+            Glide.with(this@DetailsFragment)
+                .load(contentState.image)
+                .transition(withCrossFade(factory))
+                .centerCrop()
+                .placeholder(ColorDrawable(resources.getColor(R.color.colorImagePlaceHolder)))
+                .into(detailsImage)
+
         }
     }
 
