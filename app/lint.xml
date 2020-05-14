@@ -4,9 +4,4 @@
     <issue id="InvalidPackage">
         <ignore path="**/kotlinx-coroutines-core-*.jar"/>
     </issue>
-
-    <!-- Ignore layouts inflated by ViewBinding -->
-    <issue id="UnusedResources">
-        <ignore regexp="details_fragment" />
-    </issue>
 </lint>

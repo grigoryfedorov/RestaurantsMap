@@ -44,6 +44,8 @@ android {
     lintOptions {
         abortOnError true
         warningsAsErrors true
+        // to prevent warnings on unused layouts because of View Binding
+        checkGeneratedSources true
     }
 
     android {

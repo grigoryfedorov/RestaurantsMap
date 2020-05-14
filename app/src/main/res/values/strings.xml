@@ -5,4 +5,5 @@
     <string name="location_disabled_positive_button">Settings</string>
     <string name="location_disabled_negative_button">Cancel</string>
     <string name="venue_details_error_">Something went wrong</string>
+    <string name="details_image_content_description">Venue best image</string>
 </resources>
