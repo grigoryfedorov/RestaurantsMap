@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.grigoryfedorov.restaurantsmap.domain.Location
 import org.grigoryfedorov.restaurantsmap.domain.LocationBox
 import org.grigoryfedorov.restaurantsmap.domain.Venue
 import org.grigoryfedorov.restaurantsmap.interactor.MapInteractor
@@ -25,6 +26,7 @@ class MapViewModel(
     companion object {
         const val TAG = "MapViewModel"
         const val MIN_ZOOM_TO_SEARCH = 11F
+        const val DEFAULT_ZOOM = 14f
     }
 
     val venues: LiveData<List<Venue>>
@@ -48,6 +50,8 @@ class MapViewModel(
     private var locationJob: Job? = null
 
     private var isCameraMoved = false
+    private var cameraCenter: Location? = null
+    private var cameraZoom: Float? = null
 
     private val shownVenues = HashSet<String>()
 
@@ -56,6 +60,9 @@ class MapViewModel(
     }
 
     fun onMapReady() {
+        if (cameraCenter != null && cameraZoom != null) {
+            moveCamera(cameraCenter!!, cameraZoom!!)
+        }
 
         val hasLocationPermission = hasLocationPermission()
 
@@ -75,10 +82,13 @@ class MapViewModel(
 
 
     fun onCameraIdle(
+        cameraCenter: Location,
         locationBox: LocationBox,
         zoom: Float
     ) {
         Log.i(TAG, "onCameraIdle new $locationBox zoom $zoom")
+        this.cameraCenter = cameraCenter
+        this.cameraZoom = zoom
 
         if (zoom >= MIN_ZOOM_TO_SEARCH) {
             searchVenues(locationBox)
@@ -144,7 +154,7 @@ class MapViewModel(
                 locationManager.requestLocation()
             }.onSuccess {
                 if (!isCameraMoved) {
-                    _cameraAction.value = CameraAction(it)
+                    moveCamera(it, DEFAULT_ZOOM)
                 }
             }.onFailure {
                 Log.w(TAG, "Could not get current location ${it.message}", it)
@@ -157,5 +167,9 @@ class MapViewModel(
             currentLocationEnabled = enabled,
             currentLocationButtonVisible = enabled
         )
+    }
+
+    private fun moveCamera(location: Location, zoom: Float) {
+        _cameraAction.value = CameraAction(location, zoom)
     }
 }

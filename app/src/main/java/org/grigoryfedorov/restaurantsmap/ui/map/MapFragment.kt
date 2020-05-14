@@ -29,10 +29,6 @@ import org.grigoryfedorov.restaurantsmap.util.permission.PermissionRequester
 class MapFragment(private val mainModule: MainModule)
     : Fragment(R.layout.map_fragment) {
 
-    companion object {
-        private const val DEFAULT_ZOOM: Float = 14f
-    }
-
     private var map: GoogleMap? = null
 
     private lateinit var viewModel: MapViewModel
@@ -51,7 +47,7 @@ class MapFragment(private val mainModule: MainModule)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModelObservers()
-        initMap()
+        loadMap()
         markerIcon = bitmapDescriptorFromVector(requireContext(), R.drawable.ic_pin)
     }
 
@@ -101,7 +97,7 @@ class MapFragment(private val mainModule: MainModule)
         })
     }
 
-    private fun initMap() {
+    private fun loadMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(::onMapReady)
     }
@@ -143,7 +139,7 @@ class MapFragment(private val mainModule: MainModule)
         map?.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 mapLocationToLatLng(it.location),
-                DEFAULT_ZOOM
+                it.zoom
             )
         )
     }
@@ -183,37 +179,45 @@ class MapFragment(private val mainModule: MainModule)
             return
         }
 
-        map = googleMap
-        viewModel.onMapReady()
+        initMap(googleMap)
+    }
 
-        map?.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
-        map?.setOnCameraIdleListener {
-            map?.projection?.visibleRegion?.latLngBounds?.let {
+    private fun initMap(googleMap: GoogleMap) {
+        map = googleMap
+
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
+        googleMap.setOnCameraIdleListener {
+            val center = googleMap.cameraPosition.target
+            val zoom = googleMap.cameraPosition.zoom
+            googleMap.projection.visibleRegion.latLngBounds.let {
                 viewModel.onCameraIdle(
-                    LocationBox(
+                    locationBox = LocationBox(
                         northEast = mapLocation(it.northeast),
                         southWest = mapLocation(it.southwest)
                     ),
-                    map?.cameraPosition?.zoom ?: 0F
+                    cameraCenter = mapLocation(center),
+                    zoom = zoom
                 )
             }
         }
 
-        map?.setOnCameraMoveStartedListener {
+        googleMap.setOnCameraMoveStartedListener {
             viewModel.onCameraMoveStarted()
         }
 
-        map?.setOnInfoWindowClickListener {
+        googleMap.setOnInfoWindowClickListener {
             val id: String? = it?.tag as? String
             if (id != null) {
                 navigationViewModel.details(id)
             }
         }
 
-        map?.setOnMyLocationButtonClickListener {
+        googleMap.setOnMyLocationButtonClickListener {
             viewModel.onMyLocationButtonClick()
             false
         }
+
+        viewModel.onMapReady()
     }
 
     private fun mapLocation(latLng: LatLng): Location {
